@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tally Estimator with Pause</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        #app {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <button id="tallyButton">Tally</button>
+        <button id="pauseButton">Pause</button>
+        <button id="resetButton">Reset</button>
+        <div id="countDisplay">Count: 0</div>
+        <div id="estimateDisplay">Estimate: 0 per minute</div>
+    </div>
+    <script>
+        let count = 0;
+        let startTime = 0;
+        let timer = null;
+        let isTiming = false;
+
+        const tallyButton = document.getElementById('tallyButton');
+        const resetButton = document.getElementById('resetButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const countDisplay = document.getElementById('countDisplay');
+        const estimateDisplay = document.getElementById('estimateDisplay');
+
+        tallyButton.addEventListener('click', function() {
+            if (!isTiming) {
+                startTimer();
+            }
+            count++;
+            updateDisplay();
+        });
+
+        resetButton.addEventListener('click', function() {
+            resetCount();
+        });
+
+        pauseButton.addEventListener('click', function() {
+            pauseTimer();
+        });
+
+        function updateDisplay() {
+            countDisplay.textContent = `Count: ${count}`;
+        }
+
+        function resetCount() {
+            count = 0;
+            stopTimer();
+            updateDisplay();
+            estimateDisplay.textContent = `Estimate: 0 per minute`;
+        }
+
+        function startTimer() {
+            startTime = new Date();
+            isTiming = true;
+            timer = setTimeout(calculateEstimate, 60000);
+        }
+
+        function stopTimer() {
+            clearTimeout(timer);
+            isTiming = false;
+        }
+
+        function pauseTimer() {
+            if (isTiming) {
+                clearTimeout(timer);
+                calculateEstimate();
+                isTiming = false;
+            }
+        }
+
+        function calculateEstimate() {
+            const endTime = new Date();
+            const timeDiff = (endTime - startTime) / 1000; // in seconds
+            const estimatePerMinute = (count / timeDiff) * 60;
+            estimateDisplay.textContent = `Estimate: ${estimatePerMinute.toFixed(2)} per minute`;
+        }
+    </script>
+</body>
+</html>
